@@ -21,11 +21,12 @@ public class Movies {
 	private String language;
 	private long duration;
 	private String posterName;
+	private String about;
 	public Movies() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public Movies(Long id, String title, String genre, Date releaseDate,String location,String language ,long duration,String posterName) {
+	public Movies(Long id, String title, String genre, Date releaseDate,String location,String language ,long duration,String posterName,String about) {
 		super();
 		this.id = id;
 		this.title = title;
@@ -35,6 +36,7 @@ public class Movies {
 		this.language=language;
 		this.duration=duration;
 		this.posterName=posterName;
+		this.about=about;
 	}
 	public long getId() {
 		return id;
@@ -93,6 +95,15 @@ public class Movies {
 	public void setPosterName()
 	{
 		this.posterName=posterName;
+	}
+	
+	
+	
+	public String getAbout() {
+		return about;
+	}
+	public void setAbout(String about) {
+		this.about = about;
 	}
 	@Override
 	public String toString() {

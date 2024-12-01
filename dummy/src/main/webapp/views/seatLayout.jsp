@@ -1,3 +1,4 @@
+<%@page import="com.example.realtime.entities.Seats"%>
 <%@page import="com.example.realtime.entities.seats_layout"%>
 <%@page import="java.util.List"%>
 <%@page import="com.example.realtime.entities.Theaters"%>
@@ -6,12 +7,13 @@
     pageEncoding="ISO-8859-1"%>
     
     <%
+    int s_index=0;
     
     Movies movie=(Movies)request.getAttribute("movie");
     Theaters theater=(Theaters)request.getAttribute("theater");
     String date=(String)request.getAttribute("date");
     String timming=(String)request.getAttribute("timming");
-    
+    List<Seats>seats=(List<Seats>)request.getAttribute("seatList");
     %>
 <!doctype html>
 <html lang="en">
@@ -51,9 +53,22 @@
       cursor: pointer;
       border-radius: 4px;
     }
+    .seat.available
+    {
+    background-color: white ;/* Color for sold seats */
+      border:1px solid green;
+    }
+    .seat.sold
+    {
+     background-color: #e0e0e0;
+    }
     .seat.selected {
       background-color: #28a745; /* Green color for selected seats */
       color: white;
+    }
+    .seat.held {
+    background-color: orange; /* Held seats are orange */
+    cursor: not-allowed;
     }
     .center-row {
       display: flex;
@@ -73,14 +88,15 @@
       border: 1px solid #ccc;
       margin-right: 5px; /* Space between seat and label */
     }
-    .legend-item .seat.available {
+    .legend-item .seat.sold {
       background-color: #e0e0e0; /* Color for available seats */
     }
     .legend-item .seat.selected {
       background-color: #28a745; /* Color for selected seats */
     }
-    .legend-item .seat.sold {
-      background-color: #dc3545; /* Color for sold seats */
+    .legend-item .seat.available {
+      background-color: white ;/* Color for sold seats */
+      border:1px solid green;
     }
     .btn
     {
@@ -91,6 +107,14 @@
     {
     color:white;
     }
+    
+     .gap {
+    width: 30px;
+    height: 30px;
+    background-color: transparent; /* Or any color you want for the gap */
+    margin: 5px;
+} 
+
     </style>
   
     </head>
@@ -103,9 +127,18 @@
       <div class="col-8">
         <h4><%=movie.getTitle() %></h4>
       </div>
+      
       <div class="col-4 text-right">
+    <form action="/bookingSummary?movieId=<%=movie.getId()%>&theaterId=<%=theater.getTheaterId()%>" method="POST">
+        <input type="hidden" id="selectedSeats" name="selectedSeats" value="">
+        <button type="submit" class="btn">Book Now</button>
+    </form>
+     </div>
+      
+      
+     <!--  <div class="col-4 text-right">
         <a href="bookingSummary.jsp"><button class="btn">Book Now</button></a>
-      </div>
+      </div> -->
     </div>
     <div class="row ml-2">
       <div class="col mt-2">
@@ -128,19 +161,49 @@
     </div>
     <hr>
     <% 
+    Long s=0L;
+
         // Iterate over the rows in the current seat layout
         for (Long i = 1L; i <= seatLayout.getRow_count(); i++) {
             String str = seatLayout.getCategoryName().substring(0, 1); // Get the first letter of the category name
             String str1 = str + i; // Create the row prefix, e.g., 'P1', 'E1', etc.
+           
     %>
     <div class="row center-row">
         <div class="mr-4"><%= str1 %></div>
         <% 
+          Long index=1L;
             // Iterate over the columns in the current row and display seats in one row
             for (Long j = 1L; j <= seatLayout.getColumn_count(); j++) {
+            	Seats temp=seats.get(s_index);
+             	if(temp.isGap()==false){
         %>
-        <div class="seat d-inline-block"><%= j %></div>
+        <div class="seat d-inline-block 
+        <%
+        if(temp.isAvailable()==true)
+        {
+        	out.print("available");
+        }
+        else
+        {
+        	out.print("sold");
+        }
+        %>"
+        data-seat-id="<%=temp.getSeatId()%>">
+        <%= index%>
+        </div>
         <% 
+        ++index;
+            	}
+            	else
+            	{
+            		%>
+            		 <!-- Display a gap placeholder -->
+                    <div class="gap d-inline-block"></div>
+            		<%
+            	}
+            	s_index++;
+            	
             } // End of columns loop
         %>
     </div>
@@ -150,266 +213,122 @@
 %>
 </div>
   
-  <div class="row">
-    <h6>Rs 230 Royal Gold</h6>
-  </div>
-  <hr>
-  <div class="row center-row">
-    <div class="mr-4">B</div>
-    <div class="seat">1</div>
-    <div class="seat">2</div>
-    <div class="seat">3</div>
-    <div class="seat">4</div>
-    <div class="seat">5</div>
-    <div class="seat">6</div>
-    <div class="seat">7</div>
-    <div class="seat">8</div>
-    <div class="seat">9</div>
-    <div class="seat">10</div>
-    <div class="seat">11</div>
-    <div class="seat">12</div>
-  </div>
-  <div class="row center-row">
-    <div class="mr-4">C</div>
-    <div class="seat">1</div>
-    <div class="seat">2</div>
-    <div class="seat">3</div>
-    <div class="seat">4</div>
-    <div class="seat">5</div>
-    <div class="seat">6</div>
-    <div class="seat">7</div>
-    <div class="seat">8</div>
-    <div class="seat">9</div>
-    <div class="seat">10</div>
-    <div class="seat">11</div>
-    <div class="seat">12</div>
-  </div>
-  <div class="row center-row">
-    <div class="mr-4">D</div>
-    <div class="seat">1</div>
-    <div class="seat">2</div>
-    <div class="seat">3</div>
-    <div class="seat">4</div>
-    <div class="seat">5</div>
-    <div class="seat">6</div>
-    <div class="seat">7</div>
-    <div class="seat">8</div>
-    <div class="seat">9</div>
-    <div class="seat">10</div>
-    <div class="seat">11</div>
-    <div class="seat">12</div>
-  </div>
-  <div class="row center-row">
-    <div class="mr-4">E</div>
-    <div class="seat">1</div>
-    <div class="seat">2</div>
-    <div class="seat">3</div>
-    <div class="seat">4</div>
-    <div class="seat">5</div>
-    <div class="seat">6</div>
-    <div class="seat">7</div>
-    <div class="seat">8</div>
-    <div class="seat">9</div>
-    <div class="seat">10</div>
-    <div class="seat">11</div>
-    <div class="seat">12</div>
-  </div>
-  <div class="row center-row">
-    <div class="mr-4">F</div>
-    <div class="seat">1</div>
-    <div class="seat">2</div>
-    <div class="seat">3</div>
-    <div class="seat">4</div>
-    <div class="seat">5</div>
-    <div class="seat">6</div>
-    <div class="seat">7</div>
-    <div class="seat">8</div>
-    <div class="seat">9</div>
-    <div class="seat">10</div>
-    <div class="seat">11</div>
-    <div class="seat">12</div>
-  </div>
-
-  <div class="row center-row mt-4">
-    <div class="mr-4">G</div>
-    <div class="seat">1</div>
-    <div class="seat">2</div>
-    <div class="seat">3</div>
-    <div class="seat">4</div>
-    <div class="seat">5</div>
-    <div class="seat">6</div>
-    <div class="seat">7</div>
-    <div class="seat">8</div>
-    <div class="seat">9</div>
-    <div class="seat">10</div>
-    <div class="seat">11</div>
-    <div class="seat">12</div>
-    <div class="seat">13</div>
-    <div class="seat">14</div>
-    <div class="seat">15</div>
-
-  </div>
-
-  <div class="row center-row">
-    <div class="mr-4">H</div>
-    <div class="seat">1</div>
-    <div class="seat">2</div>
-    <div class="seat">3</div>
-    <div class="seat">4</div>
-    <div class="seat">5</div>
-    <div class="seat">6</div>
-    <div class="seat">7</div>
-    <div class="seat">8</div>
-    <div class="seat">9</div>
-    <div class="seat">10</div>
-    <div class="seat">11</div>
-    <div class="seat">12</div>
-    <div class="seat">13</div>
-    <div class="seat">14</div>
-    <div class="seat">15</div>
-
-  </div>
-  <div class="row center-row">
-    <div class="mr-4">I</div>
-    <div class="seat">1</div>
-    <div class="seat">2</div>
-    <div class="seat">3</div>
-    <div class="seat">4</div>
-    <div class="seat">5</div>
-    <div class="seat">6</div>
-    <div class="seat">7</div>
-    <div class="seat">8</div>
-    <div class="seat">9</div>
-    <div class="seat">10</div>
-    <div class="seat">11</div>
-    <div class="seat">12</div>
-    <div class="seat">13</div>
-    <div class="seat">14</div>
-    <div class="seat">15</div>
-
-  </div>
-  <div class="row center-row">
-    <div class="mr-4">J</div>
-    <div class="seat">1</div>
-    <div class="seat">2</div>
-    <div class="seat">3</div>
-    <div class="seat">4</div>
-    <div class="seat">5</div>
-    <div class="seat">6</div>
-    <div class="seat">7</div>
-    <div class="seat">8</div>
-    <div class="seat">9</div>
-    <div class="seat">10</div>
-    <div class="seat">11</div>
-    <div class="seat">12</div>
-    <div class="seat">13</div>
-    <div class="seat">14</div>
-    <div class="seat">15</div>
-
-  </div>
-  <div class="row center-row">
-    <div class="mr-4">K</div>
-    <div class="seat">1</div>
-    <div class="seat">2</div>
-    <div class="seat">3</div>
-    <div class="seat">4</div>
-    <div class="seat">5</div>
-    <div class="seat">6</div>
-    <div class="seat">7</div>
-    <div class="seat">8</div>
-    <div class="seat">9</div>
-    <div class="seat">10</div>
-    <div class="seat">11</div>
-    <div class="seat">12</div>
-    <div class="seat">13</div>
-    <div class="seat">14</div>
-    <div class="seat">15</div>
-  </div>
-
-  <div class="row">
-    <h6>Rs 200 Royal Silver</h6>
-  </div>
-  <hr>
-
-  <div class="row center-row">
-    <div class="mr-4">L</div>
-    <div class="seat">1</div>
-    <div class="seat">2</div>
-    <div class="seat">3</div>
-    <div class="seat">4</div>
-    <div class="seat">5</div>
-    <div class="seat">6</div>
-    <div class="seat">7</div>
-    <div class="seat">8</div>
-    <div class="seat">9</div>
-    <div class="seat">10</div>
-    <div class="seat">11</div>
-    <div class="seat">12</div>
-    <div class="seat">13</div>
-    <div class="seat">14</div>
-    <div class="seat">15</div>
-  </div>
-  <div class="row center-row">
-    <div class="mr-4">M</div>
-    <div class="seat">1</div>
-    <div class="seat">2</div>
-    <div class="seat">3</div>
-    <div class="seat">4</div>
-    <div class="seat">5</div>
-    <div class="seat">6</div>
-    <div class="seat">7</div>
-    <div class="seat">8</div>
-    <div class="seat">9</div>
-    <div class="seat">10</div>
-    <div class="seat">11</div>
-    <div class="seat">12</div>
-    <div class="seat">13</div>
-    <div class="seat">14</div>
-    <div class="seat">15</div>
-  </div>
-
+  
   <div class="row mt-4">
     <div class="col text-center">
       All eyes this way! Please!
     </div>
   </div>
 
- 
-  <div class="row">
-    <div class="legend-item">
-      <div class="seat available"></div> Available
-    </div>
-    <div class="legend-item">
-      <div class="seat selected"></div> Selected
-    </div>
-    <div class="legend-item">
-      <div class="seat sold"></div> Sold
-    </div>
+
+  
+  <div class="row justify-content-center">
+  <div class="legend-item">
+    <div class="seat sold"></div> Sold
   </div>
+  <div class="legend-item">
+    <div class="seat selected"></div> Selected
+  </div>
+  <div class="legend-item">
+    <div class="seat available"></div> Available
+  </div>
+</div>
 
 </div>
 
 <script>
-  document.querySelectorAll('.seat').forEach(seat => {
+
+let selectedSeats=[];
+
+document.querySelectorAll('.seat.available').forEach(seat=>{
+	seat.addEventListener('click',function(){
+		
+		const seatId=this.getAttribute('data-seat-id');
+		
+		if(this.classList.contains('selected')){
+			this.classList.remove('selected');
+			selectedSeats = selectedSeats.filter(id => id !== seatId);
+		}else{
+			this.classList.add('selected');
+			selectedSeats.push(seatId);
+			holdSeat(seatId,this);
+		}
+	});
+});
+
+
+document.querySelector('form').addEventListener('submit', function(event) {
+    // Convert the selectedSeats array to a string and store it in a hidden input
+    document.getElementById('selectedSeats').value = selectedSeats.join(',');
+});
+
+/* document.querySelectorAll('.seat.available').forEach(seat => {
     seat.addEventListener('click', function() {
-      this.classList.toggle('selected');
+        this.classList.add('selected');
+        
+        const seatId = this.getAttribute('data-seat-id');
+        console.log(seatId);
+        holdSeat(seatId, this);
     });
-  });
-</script>
+}); */
+
+function holdSeat(seatId, seatElement) {
+    fetch(`/hold-seat`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ seatId: seatId }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log(`Seat ${seatId} is held for 3 minutes.`);
+            
+            // Automatically release the seat after 3 minutes if not booked
+            setTimeout(() => {
+                releaseSeat(seatId, seatElement);
+            }, 3 * 60 * 1000); // 3 minutes in milliseconds
+        } else {
+            seatElement.classList.remove('selected'); // unmark seat if holding fails
+            alert('Seat is no longer available.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+function releaseSeat(seatId, seatElement) {
+    fetch(`/release-seat`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ seatId: seatId }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log(`Seat ${seatId} released.`);
+            seatElement.classList.remove('selected');
+            seatElement.classList.add('available'); // Mark seat as available again
+        } else {
+            console.error(`Failed to release seat ${seatId}.`);
+        }
+    })
+    .catch(error => {
+        console.error('Error releasing the seat:', error);
+    });
+}
 
 
 
-    <!-- Optional JavaScript; choose one of the two! -->
+  
+  
 
-    <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
 
-    <!-- Option 2: Separate Popper and Bootstrap JS -->
-    <!--
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
-    -->
+ </script>
+
   </body>
 </html>

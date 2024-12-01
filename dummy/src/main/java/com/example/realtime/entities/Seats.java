@@ -1,5 +1,10 @@
 package com.example.realtime.entities;
 
+import java.time.LocalDateTime;
+
+import org.antlr.v4.runtime.misc.NotNull;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,15 +24,23 @@ public class Seats {
 	private String seatNumber;
 	private boolean available;
 	private boolean isGap;
-	@ManyToOne
-	@JoinColumn(name="layout_id")
-	private seats_layout seatLayout;
+	private boolean sold;
+	private  boolean held;
+    private LocalDateTime holdExpirationTime;
+	private String Layout_type;
+	private int price;
+	
+	 @ManyToOne
+	    @JoinColumn(name = "booking_id") // This will create the foreign key in Seats table
+	    private Bookings booking;
+	
 	public Seats() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 	public Seats(Long seatId, int seatRow, int columnNumber, String seatNumber, boolean available, boolean isGap,
-			seats_layout seatLayout) {
+			String Layout_type, boolean sold,boolean held,
+			LocalDateTime holdExpirationTime,int price) {
 		super();
 		this.seatId = seatId;
 		this.seatRow = seatRow;
@@ -35,7 +48,11 @@ public class Seats {
 		this.seatNumber = seatNumber;
 		this.available = available;
 		this.isGap = isGap;
-		this.seatLayout = seatLayout;
+		this.sold=sold;
+		this.Layout_type=Layout_type;
+		this.held=held;
+		this.holdExpirationTime=holdExpirationTime;
+		this.price=price;
 	}
 	public Long getSeatId() {
 		return seatId;
@@ -73,16 +90,45 @@ public class Seats {
 	public void setGap(boolean isGap) {
 		this.isGap = isGap;
 	}
-	public seats_layout getSeatLayout() {
-		return seatLayout;
+	
+	public boolean isSold()
+	{
+		return sold;
 	}
-	public void setSeatLayout(seats_layout seatLayout) {
-		this.seatLayout = seatLayout;
+	
+	public void setSold(boolean sold)
+	{
+		this.sold=sold;
+	}
+	
+	
+	
+	public boolean isHeld() {
+		return held;
+	}
+	public void setHeld(boolean held) {
+		this.held = held;
+	}
+	
+	
+	public LocalDateTime getHoldExpirationTime() {
+		return holdExpirationTime;
+	}
+	public void setHoldExpirationTime(LocalDateTime holdExpirationTime) {
+		this.holdExpirationTime = holdExpirationTime;
+	}
+	
+	
+	public int getPrice() {
+		return price;
+	}
+	public void setPrice(int price) {
+		this.price = price;
 	}
 	@Override
 	public String toString() {
 		return "Seats [seatId=" + seatId + ", seatRow=" + seatRow + ", columnNumber=" + columnNumber + ", seatNumber="
-				+ seatNumber + ", available=" + available + ", isGap=" + isGap + ", seatLayout=" + seatLayout + "]";
+				+ seatNumber + ", available=" + available + ", isGap=" + isGap +  "]";
 	}
 	
 	

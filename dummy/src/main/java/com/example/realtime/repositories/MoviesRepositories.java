@@ -18,4 +18,6 @@ public interface MoviesRepositories extends JpaRepository<Movies, Long>{
 //	Movies findMoviesById(@Param("id") Long id);
 
 	Movies findMoviesById(Long id);
+	
+	Movies findByTitle(String title);
 }

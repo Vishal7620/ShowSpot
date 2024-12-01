@@ -34,4 +34,9 @@ public class MoviesService {
 		return moviesRepositories.findMoviesById(movieId);
 	}
 	
+	public Movies findMovieByName(String movieName)
+	{
+		return moviesRepositories.findByTitle(movieName);
+	}
+	
 }

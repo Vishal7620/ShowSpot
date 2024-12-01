@@ -1,7 +1,12 @@
 <!doctype html>
+<%@page import="com.example.realtime.entities.User"%>
 <%@page import="com.example.realtime.entities.Shows"%>
 <%@page import="com.example.realtime.entities.Movies"%>
 <%@page import="java.util.List"%>
+
+<%
+User currentUser=(User)session.getAttribute("currentUser");
+%>
 <html lang="en">
 <head>
     <!-- Required meta tags -->
@@ -82,7 +87,21 @@
     }
     .popup-content .btn {
       margin: 5px;
-    }    
+    }
+    
+    .card-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%; /* Adjust based on your card layout */
+  }
+
+  .card-text {
+    white-space: nowrap; /* Optional: prevents genre from wrapping */
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+        
     </style>
 </head>
 <body>
@@ -104,15 +123,18 @@
         <a class="nav-link" href="#">Movies</a>
       </li>
       <li class="nav-item active">
-        <a class="nav-link" href="#">Sign In</a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Sign Out</a>
+        <a class="nav-link" href="/views/profile">Profile</a>
       </li>
     </ul>
     <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-      <button class="btn my-2 my-sm-0" type="submit">Search</button>
+      <!-- <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"> -->
+      <!-- <button class="btn my-2 my-sm-0" type="submit">Search</button> -->
+      <% if (currentUser != null && currentUser.getEmail() != null) { %>
+      <h4>Welcome back, <%= currentUser.getEmail().substring(0, 1).toUpperCase() %></h4>
+      <% } else { %>
+     <h3>Welcome back, Guest</h3>
+      <% } %>
+
        <button id="load-city" class="btn ml-2">Select City</button>
     </form>
   </div>
@@ -122,10 +144,14 @@
 <div class="container mt-5">
   <div class="row align-items-center">
     <h3 class="col-md-6">Recommended Movies</h3>
-    <input type="hidden" id="hidden-city" name="hidden-city">
+    
+    
+    <!-- <input type="hidden" id="hidden-city" name="hidden-city">
+    
     <div class="col-md-6 text-right">
       <h4 id="display-city" class="display-city"></h4>
-    </div>
+    </div> -->
+    
   </div>
   <div class="row">
     <% 
@@ -133,52 +159,25 @@
     for (Movies movie : movies) {
     %>
     <!-- Card 1 -->
+  
     <div class="col-md-3 mb-3">
-      <a href="/views/selectedMovie?movieId=<%= movie.getId() %>" class="text-decoration-none movie-card" data-movie-id="<%= movie.getId() %>">
-        <div class="card">
-          <img src="${pageContext.request.contextPath}/images/<%=movie.getPosterName() %>.jpg" class="card-img-top" alt="Image 1">
-          <div class="card-body">
-            <h5 class="card-title"><%=movie.getTitle()%></h5>
-            <p class="card-text"><%= movie.getGenre()%></p>
-          </div>
-        </div>
-      </a>
+  <a href="/views/selectedMovie?movieId=<%= movie.getId() %>" class="text-decoration-none movie-card" data-movie-id="<%= movie.getId() %>">
+    <div class="card">
+      <img src="${pageContext.request.contextPath}/images/<%=movie.getPosterName()%>" class="card-img-top" alt="Image 1">
+      <div class="card-body">
+        <h5 class="card-title" title="<%=movie.getTitle()%>"><%=movie.getTitle()%></h5>
+        <p class="card-text"><%= movie.getGenre()%></p>
+      </div>
     </div>
+  </a>
+</div>
     <% 
     }
     %>
   </div>
 
-  <!-- Code for events -->
-  <div class="container mt-5">
-    <h3>Outdoor Events</h3>
-    <div class="row">
-      <% 
-      List<Shows> showsList = (List<Shows>) request.getAttribute("shows");
-		  String city=(String)request.getAttribute("selectedCity");
-		  System.out.println(city);
-		  if(showsList!=null)
-		  {
-      for (Shows show : showsList) {
-      %>
-      <!-- Card 1 -->
-      <div class="col-md-3 mb-3">
-        <div class="card">
-          <img src="https://via.placeholder.com/350x150" class="card-img-top" alt="Image 1">
-          <div class="card-body">
-            <h5 class="card-title"><%= show.getName() %></h5>
-            <p class="card-text"><%= show.getTime() %></p>
-            <p class="card-text"><%= show.getLocation() %></p>
-          </div>
-        </div>
-      </div>
-      <% } %>
-		  <% }else{
-      %>
-       <h4>There is no shows available at this city</h4>
-     <% } %>
-    </div>
-  </div>
+ 
+  
 </div>
 
 <!-- Select city popup window -->
@@ -200,6 +199,7 @@
                     <option value="Mumbai">Mumbai</option>
                     <option value="Pune">Pune</option>
                     <option value="Bengaluru">Bengaluru</option>
+                    <option value="Punjab">Punjab</option>
                 </select>
             </div>
         </div>
@@ -208,48 +208,69 @@
         <!-- Placeholder for selected city -->
         <div id="selected-city" class="mt-3"></div>
         
-        <button id="close-popup" class="btn btn-secondary mt-3">Select</button>
+      <button id="close-popup" class="btn btn-secondary mt-3">Select</button>
+      
+      <button type="button" id="cancel-button" class="btn btn-secondary mt-3">Cancel</button>
          </form>
     </div>
 </div>
 
 <!-- Search content using city -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+
+ document.addEventListener('DOMContentLoaded', function() {
     const popup = document.getElementById('myPopup');
     const loadCityBtn = document.getElementById('load-city');
     const closePopupBtn = document.getElementById('close-popup');
     const selectCity = document.getElementById('select-city');
     const hiddenCity = document.getElementById('hidden-city');
     const displayCity = document.getElementById('display-city');
-
-    loadCityBtn.addEventListener('click', function(event) {
-        event.preventDefault(); // Prevent the default button action
-        popup.style.display = 'flex'; // Show the popup
-        console.log('Popup opened');
-    });
-
-    closePopupBtn.addEventListener('click', function() {
-        const selectedCity = selectCity.value;
-        hiddenCity.value = selectedCity;
-        displayCity.textContent = selectedCity;
-        popup.style.display = 'none'; // Hide the popup
-        console.log('Popup closed with city:', selectedCity);
-    });
-
-    // Optional: Filter city list based on search input
-    const citySearch = document.getElementById('city-search');
-    citySearch.addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
-        const options = selectCity.querySelectorAll('option');
-        options.forEach(option => {
-            if (option.textContent.toLowerCase().includes(searchTerm)) {
-                option.style.display = 'block';
-            } else {
-                option.style.display = 'none';
+    const cancelBtn = document.getElementById('cancel-button');
+    
+    if (loadCityBtn) {
+        loadCityBtn.addEventListener('click', function (event) {
+            event.preventDefault(); // Prevent default button action
+            if (popup) {
+                popup.style.display = 'flex'; // Show the popup
+                console.log('Popup opened');
             }
         });
-    });
+    }
+    
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', function () {
+            if (popup) {
+                popup.style.display = 'none'; // Hide the popup
+                console.log('Popup closed via Cancel button');
+            }
+        });
+    }
+
+    // Optional: Filter city list based on search input
+     if (citySearch) {
+        citySearch.addEventListener('input', function () {
+            const searchTerm = this.value.toLowerCase();
+            const options = selectCity.querySelectorAll('option');
+            options.forEach(option => {
+                if (option.textContent.toLowerCase().includes(searchTerm)) {
+                    option.style.display = 'block';
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+        });
+    }
+    
+     if (closePopupBtn) {
+         closePopupBtn.addEventListener('click', function (event) {
+             event.preventDefault(); // Prevent default button action
+             if (popup) {
+                 popup.style.display = 'none'; // Hide the popup
+                 console.log('Popup closed via Select button');
+             }
+         });
+     }
+    
 });
 </script>
 
@@ -258,12 +279,6 @@ document.addEventListener('DOMContentLoaded', function() {
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
 
-<!-- Option 2: Separate Popper and Bootstrap JS -->
-<!--
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
--->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </body>

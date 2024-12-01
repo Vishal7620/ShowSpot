@@ -15,6 +15,12 @@
     
     Movies movie= (Movies)request.getAttribute("movie");
     String city=(String) request.getAttribute("city");
+    
+    Set<Theaters> theaters=(Set<Theaters>)request.getAttribute("theaters");
+    Map<String,List<String>> map=(Map<String,List<String>>)request.getAttribute("theater-timing");
+    List<Long>id=(List<Long>)request.getAttribute("theaterId");
+      Long i=0L;
+	  int idx=i.intValue();
     %>
 <html lang="en">
   <head>
@@ -129,9 +135,9 @@
   
   %>
   
-    <button class="btn"><%=formatteddate1 %></button>
-    <button class="btn ml-2"><%=formatteddate2 %></button>
-    <button class="btn ml-2"><%=formatteddate3 %></button>
+   <a href="/views/selectTheater?movieId=<%=movie.getId()%>&city=<%=city%>"> 
+   <button class="btn"><%=formatteddate1 %></button>
+   </a>
   </div>
 </div>
 
@@ -141,11 +147,10 @@
   <!-- First Row -->
   
   <%
-  Set<Theaters> theaters=(Set<Theaters>)request.getAttribute("theaters");
-  Map<String,List<String>> map=(Map<String,List<String>>)request.getAttribute("theater-timing");
-  
+ 
   if(theaters!=null)
   {
+	  
   for(Theaters theater:theaters)
   {
 	  String theaterName=theater.getTheaterName();
@@ -163,13 +168,15 @@
      {
     	 for(String timing:timings)
     	 {
+    		 
      %>
-     <a href="/views/seatLayout?movieId=<%=movie.getId()%>&city=<%=city%>&theaterId=<%=theater.getTheaterId()%>&timming=<%=timing %>&date=<%=formatteddate1%>"> 
+     <a href="/views/seatLayout?movieId=<%=movie.getId()%>&city=<%=city%>&theaterId=<%=id.get(idx)%>&timming=<%=timing%>&date=<%=formatteddate1%>"> 
      <button class="timming"><%= timing%></button>
      </a>
 
   <%
-  }
+  idx++;
+    	 }
   }
   else
   {

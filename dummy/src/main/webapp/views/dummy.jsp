@@ -1,270 +1,248 @@
-<!doctype html>
-<%@page import="com.example.realtime.entities.Shows"%>
-<%@page import="com.example.realtime.entities.Movies"%>
-<%@page import="java.util.List"%>
-<html lang="en">
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
 <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
+<meta charset="ISO-8859-1">
+ <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
 
-    <title>ShowSpot</title>
-    
-    <style>
-    .card {
-      height: 400px;
-    }
-    .card-img-top {
-      height: 80%;
-      object-fit: cover;
-    }
-    .card-body {
-      height: 20%;
-      overflow: hidden;
-    }
-    .card-title, .card-text {
-      color: black;
-    }
-    .btn {
-      color: white;
-      background-color: #EE4566;
-    }
-    .btn:hover {
-      color: white;
-    }
-    .popup {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      justify-content: center;
-      align-items: center;
-    }
-    .popup-content {
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      text-align: center;
-      width: 600px;
-      max-width: 90%;
-    }
-    .popup-content input[type="text"] {
-      width: 100%;
-      margin-bottom: 20px;
-    }
-    #city-list {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-    }
-    .city-item {
-      text-decoration: none;
-      color: black;
-      text-align: center;
-      margin: 10px;
-      flex: 1 1 150px;
-    }
-    .city-icon {
-      font-size: 100px;
-      margin-bottom: 5px;
-    }
-    .city-item p {
-      margin: 0;
-    }
-    .city-item:hover {
-      color: #EE4566;
-    }
-    .popup-content .btn {
-      margin: 5px;
-    }    
+<title>ShowSpot</title>
+<style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #343a40;
+        }
+        .navbar-brand, .nav-link {
+            color: #fff;
+        }
+        .form-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 <body>
-
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">ShowSpot</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="#">About</a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Movies</a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Sign In</a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Sign Out</a>
-      </li>
-    </ul>
-    <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-      <button class="btn my-2 my-sm-0" type="submit">Search</button>
-       <button id="load-city" class="btn ml-2">Select City</button>
-    </form>
-  </div>
-</nav>
-
-<!-- Code for movies -->
-<div class="container mt-5">
-  <div class="row align-items-center">
-    <h3 class="col-md-6">Recommended Movies</h3>
-    <input type="hidden" id="hidden-city" name="hidden-city">
-    <div class="col-md-6 text-right">
-      <h4 id="display-city" class="display-city"></h4>
-    </div>
-  </div>
-  <div class="row">
-    <% 
-    List<Movies> movies = (List<Movies>) request.getAttribute("movies");
-    for (Movies movie : movies) {
-    %>
-    <!-- Card 1 -->
-    <div class="col-md-3 mb-3">
-      <a href="/views/selectedMovie.jsp" class="text-decoration-none movie-card" data-movie-id="<%= movie.getId() %>">
-        <div class="card">
-          <img src="${pageContext.request.contextPath}/images/anime.jpg" class="card-img-top" alt="Image 1">
-          <div class="card-body">
-            <h5 class="card-title"><%= movie.getTitle() %></h5>
-            <p class="card-text"><%= movie.getGenre() %></p>
-          </div>
+ <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="#">Welcome Admin</a>
+        <div class="ml-auto">
+            <a class="nav-link" href="#">Logout</a>
+            <a class="btn btn-primary ml-2" href="#">Add Movie</a>
         </div>
-      </a>
-    </div>
-    <% 
-    }
-    %>
-  </div>
+    </nav>
 
-  <!-- Code for events -->
-  <div class="container mt-5">
-    <h3>Outdoor Events</h3>
-    <div class="row">
-      <% 
-      List<Shows> showsList = (List<Shows>) request.getAttribute("shows");
-		  String city=(String)request.getAttribute("selectedCity");
-		  System.out.println(city);
-		  if(showsList!=null)
-		  {
-      for (Shows show : showsList) {
-      %>
-      <!-- Card 1 -->
-      <div class="col-md-3 mb-3">
-        <div class="card">
-          <img src="https://via.placeholder.com/350x150" class="card-img-top" alt="Image 1">
-          <div class="card-body">
-            <h5 class="card-title"><%= show.getName() %></h5>
-            <p class="card-text"><%= show.getTime() %></p>
-            <p class="card-text"><%= show.getLocation() %></p>
-          </div>
-        </div>
-      </div>
-      <% } %>
-		  <% }else{
-      %>
-       <h4>There is no shows available at this city</h4>
-     <% } %>
-    </div>
-  </div>
-</div>
-
-<!-- Select city popup window -->
-<div id="myPopup" class="popup">
-    <div class="popup-content">
-        <h4>Select a City</h4>
-        
-        <!-- Search bar -->
-        <input type="text" id="city-search" class="form-control mb-3" placeholder="Search for a city">
-        
-        <!-- Cities list -->
-        <form action="/submit-city" method="post">
-        <div id="city-list">
+     <!-- Form for Movie, Theater, and Seat Layout Details -->
+    <div class="form-container">
+        <h2 class="text-center mb-4">Add Movie, Theater, and Seat Layout Details</h2>
+        <form method="post" action="/admin/addMovieAndTheater" enctype="multipart/form-data">
+            <!-- Movie Information -->
+            <!-- Movie Information -->
+            <h4>Movie Information</h4>
             <div class="form-group">
-                <label for="select-city">Select a City:</label>
-                <select id="select-city" name="city" class="form-control">
-                    <option value="">-- Choose a city --</option>
-                    <option value="Delhi">Delhi</option>
-                    <option value="Mumbai">Mumbai</option>
-                    <option value="Pune">Pune</option>
-                    <option value="Bengaluru">Bengaluru</option>
+                <label for="title">Movie Title</label>
+                <input type="text" class="form-control" id="title" name="title" placeholder="Enter movie title" required>
+            </div>
+            <div class="form-group">
+                <label for="genre">Genre</label>
+                <select class="form-control" id="genre" name="genre" required>
+                    <option value="Romance">Romance</option>
+                    <option value="Drama">Drama</option>
+                    <option value="Action">Action</option>
+                    <option value="Comedy">Comedy</option>
+                    <option value="Thriller">Thriller</option>
+                    <option value="Other">Other</option>
                 </select>
             </div>
-        </div>
-       
-        
-        <!-- Placeholder for selected city -->
-        <div id="selected-city" class="mt-3"></div>
-        
-        <button id="close-popup" class="btn btn-secondary mt-3">Select</button>
-         </form>
+            <div class="form-group">
+                <label for="location">Location</label>
+                <input type="text" class="form-control" id="location" name="location" placeholder="Enter location" required>
+            </div>
+            <div class="form-group">
+                <label for="releaseDate">Release Date</label>
+                <input type="date" class="form-control" id="releaseDate" name="releaseDate" required>
+            </div>
+              <div class="form-group">
+                <label for="releaseDate">Language</label>
+                <input type="text" class="form-control" id="Language" name="Language" required>
+            </div>
+            <div class="form-group">
+                <label for="duration">Duration (in minutes)</label>
+                <input type="number" class="form-control" id="duration" name="duration" placeholder="Enter duration" required>
+            </div>
+            <div class="form-group">
+                <label for="posterName">Poster Name</label>
+                <input type="text" class="form-control" id="posterName" name="posterName" placeholder="Enter poster name" required>
+            </div>
+            <div class="form-group">
+                <label for="poster">Upload Poster</label>
+                <input type="file" class="form-control-file" id="poster" name="poster" accept="image/*" required>
+            </div>
+            <div class="form-group">
+                <label for="about">About the Movie</label>
+                <textarea class="form-control" id="about" name="about" rows="4" placeholder="Write a short description about the movie" required></textarea>
+            </div>
+            
+            <hr>
+            
+            <!-- Theater Information -->
+            <h4>Theater Information</h4>
+            <div class="form-group">
+                <label for="theaterName">Theater Name</label>
+                <input type="text" class="form-control" id="theaterName" name="theaterName" placeholder="Enter theater name" required>
+            </div>
+            <div class="form-group">
+                <label for="address">Address</label>
+                <input type="text" class="form-control" id="address" name="address" placeholder="Enter theater address" required>
+            </div>
+                <div class="form-group">
+        <label for="movieDate">Movie Date</label>
+        <input type="date" class="form-control" id="movieDate" name="movieDate" required>
     </div>
-</div>
+    
+    <div class="form-group">
+        <label for="movieTime">Movie Time</label>
+        <input type="time" class="form-control" id="movieTime" name="movieTime" required>
+    </div>
+            <div class="form-group">
+                <label for="movieName">Movie Name</label>
+                <input type="text" class="form-control" id="movieName" name="movieName" placeholder="Enter movie name playing in this theater" required>
+            </div>
+            <!-- Seat Layout Information -->
+            <h4>Seat Layout Information</h4>
+            
+             <div class="form-group">
+           <label for="totalRows">Total Rows including the blank</label>
+                <input type="number" class="form-control" id="totalRows" name="totalRows" placeholder="Enter total number of rows" required>
+            </div>
+            <div class="form-group">
+                <label for="totalColumns">Total Columns including the blank</label>
+                <input type="number" class="form-control" id="totalColumns" name="totalColumns" placeholder="Enter total number of columns" required>
+            </div> 
+            
+             <div class="form-group">
+        <label for="categoryCount">Number of Categories</label>
+        <input type="number" class="form-control" id="categoryCount" name="categoryCount" min="1" required>
+    </div>
+    
+    <div id="dynamicFields"></div>
+    
+    <button type="button" class="btn btn-secondary" onclick="generateCategoryFields()">Generate Fields</button> 
+               
+          
+        <!--   <div class="form-group">
+           <label for="totalRows">Total Rows</label>
+                <input type="number" class="form-control" id="totalRows" name="totalRows" placeholder="Enter total number of rows" required>
+            </div>
+            <div class="form-group">
+                <label for="totalColumns">Total Columns</label>
+                <input type="number" class="form-control" id="totalColumns" name="totalColumns" placeholder="Enter total number of columns" required>
+            </div>   -->
+            
+            <div class="form-group">
+                <label for="blankRows">Blank Row Numbers</label>
+                <input type="text" class="form-control" id="blankRows" name="blankRows" placeholder="Enter blank row numbers (comma-separated)">
+                <small class="form-text text-muted">Example: 2, 5, 8</small>
+            </div>
+            <div class="form-group">
+                <label for="blankColumns">Blank Column Numbers</label>
+                <input type="text" class="form-control" id="blankColumns" name="blankColumns" placeholder="Enter blank column numbers (comma-separated)">
+                <small class="form-text text-muted">Example: 3, 7</small>
+            </div>
+            <div class="form-group">
+                <label for="blankSeats">Specific Blank Seat Numbers</label>
+                <input type="text" class="form-control" id="blankSeats" name="blankSeats" placeholder="Enter specific blank seat numbers (comma-separated)">
+                <small class="form-text text-muted">
+                    Seat numbers should be between 1 and (total rows × total columns).
+                </small>
+            </div>
+            
 
-<!-- Search content using city -->
+            <button type="submit" class="btn btn-success btn-block">Submit</button>
+        </form>
+    </div>
+    
+ <!-- JavaScript for Dynamic Fields -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const popup = document.getElementById('myPopup');
-    const loadCityBtn = document.getElementById('load-city');
-    const closePopupBtn = document.getElementById('close-popup');
-    const selectCity = document.getElementById('select-city');
-    const hiddenCity = document.getElementById('hidden-city');
-    const displayCity = document.getElementById('display-city');
+    function generateCategoryFields() {
+        const categoryCount = document.getElementById("categoryCount").value;
+        const dynamicFieldsContainer = document.getElementById("dynamicFields");
+        dynamicFieldsContainer.innerHTML = ""; // Clear existing fields
 
-    loadCityBtn.addEventListener('click', function(event) {
-        event.preventDefault(); // Prevent the default button action
-        popup.style.display = 'flex'; // Show the popup
-        console.log('Popup opened');
-    });
+        if (categoryCount > 0) {
+            for (let i = 1; i <= categoryCount; i++) {
+                const categoryDiv = document.createElement("div");
+                categoryDiv.classList.add("form-group");
 
-    closePopupBtn.addEventListener('click', function() {
-        const selectedCity = selectCity.value;
-        hiddenCity.value = selectedCity;
-        displayCity.textContent = selectedCity;
-        popup.style.display = 'none'; // Hide the popup
-        console.log('Popup closed with city:', selectedCity);
-    });
+                // Category Name
+                const categoryLabel = document.createElement("label");
+                categoryLabel.textContent = `Category ${i} Name`;
+                const categoryInput = document.createElement("input");
+                categoryInput.type = "text";
+                categoryInput.className = "form-control";
+                categoryInput.name = `categoryName${i}`;
+                categoryInput.required = true;
 
-    // Optional: Filter city list based on search input
-    const citySearch = document.getElementById('city-search');
-    citySearch.addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
-        const options = selectCity.querySelectorAll('option');
-        options.forEach(option => {
-            if (option.textContent.toLowerCase().includes(searchTerm)) {
-                option.style.display = 'block';
-            } else {
-                option.style.display = 'none';
+                // Row Count
+                const rowLabel = document.createElement("label");
+                rowLabel.textContent = `Category ${i} Row Count`;
+                const rowInput = document.createElement("input");
+                rowInput.type = "number";
+                rowInput.className = "form-control";
+                rowInput.name = `rowCount${i}`;
+                rowInput.min = "1";
+                rowInput.required = true;
+                
+                
+             // Column Count
+                const colLabel = document.createElement("label");
+                colLabel.textContent = `Category ${i} Column Count`;
+                const colInput = document.createElement("input");
+                colInput.type = "number";
+                colInput.className = "form-control";
+                colInput.name = `columnCount${i}`;
+                colInput.min = "1";
+                colInput.required = true;
+
+                // Price
+                const priceLabel = document.createElement("label");
+                priceLabel.textContent = `Category ${i} Price`;
+                const priceInput = document.createElement("input");
+                priceInput.type = "number";
+                priceInput.step = "0.01"; // For decimal prices
+                priceInput.className = "form-control";
+                priceInput.name = `price${i}`;
+                priceInput.min = "0";
+                priceInput.required = true;
+                
+                categoryDiv.appendChild(categoryLabel);
+                categoryDiv.appendChild(categoryInput);
+                categoryDiv.appendChild(rowLabel);
+                categoryDiv.appendChild(rowInput);
+                categoryDiv.appendChild(colLabel);
+                categoryDiv.appendChild(colInput);
+                categoryDiv.appendChild(priceLabel);
+                categoryDiv.appendChild(priceInput);
+                dynamicFieldsContainer.appendChild(categoryDiv);
             }
-        });
-    });
-});
-</script>
-
-<!-- Optional JavaScript; choose one of the two! -->
-<!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
+        } else {
+            alert("Please enter a valid number of categories.");
+        }
+    }
+</script>   
+    
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
 
-<!-- Option 2: Separate Popper and Bootstrap JS -->
-<!--
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
--->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    
 </body>
 </html>

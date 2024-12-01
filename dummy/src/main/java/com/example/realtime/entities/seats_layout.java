@@ -22,29 +22,28 @@ public class seats_layout {
     private int price;
 	private Long row_count;
 	private Long column_count;
+	private String layout_type;
 	
-	@ManyToOne
-	@JoinColumn(name="theater_id")
-	private Theaters theater;
+//	@ManyToOne
+//	@JoinColumn(name="theater_id")
+//	private Theaters theater;
 	
-	@OneToMany(mappedBy="seatLayout",cascade=CascadeType.ALL)
-	private List<Seats> seats=new ArrayList<>();
+//	@OneToMany(mappedBy="seatLayout",cascade=CascadeType.ALL)
+//	private List<Seats> seats=new ArrayList<>();
 
 	public seats_layout() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public seats_layout(Long layoutId, String categoryName, int price, Long row_count, Long column_count,
-			Theaters theater, List<Seats> seats) {
+	public seats_layout(Long layoutId, String categoryName, int price, Long row_count, Long column_count,String layout_type) {
 		super();
 		LayoutId = layoutId;
 		this.categoryName = categoryName;
 		this.price = price;
 		this.row_count = row_count;
 		this.column_count = column_count;
-		this.theater = theater;
-		this.seats = seats;
+		this.layout_type=layout_type;
 	}
 
 	public Long getLayoutId() {
@@ -86,28 +85,19 @@ public class seats_layout {
 	public void setColumn_count(Long column_count) {
 		this.column_count = column_count;
 	}
-
-	public Theaters getTheater() {
-		return theater;
+	public String getLayout()
+	{
+		return layout_type;
 	}
-
-	public void setTheater(Theaters theater) {
-		this.theater = theater;
+	
+	public void setLayout(String layout_type)
+	{
+		this.layout_type=layout_type;
 	}
-
-	public List<Seats> getSeats() {
-		return seats;
-	}
-
-	public void setSeats(List<Seats> seats) {
-		this.seats = seats;
-	}
-
 	@Override
 	public String toString() {
 		return "seats_layout [LayoutId=" + LayoutId + ", categoryName=" + categoryName + ", price=" + price
-				+ ", row_count=" + row_count + ", column_count=" + column_count + ", theater=" + theater + ", seats="
-				+ seats + "]";
+				+ ", row_count=" + row_count + ", column_count=" + column_count + "]";
 	}
 	
 	

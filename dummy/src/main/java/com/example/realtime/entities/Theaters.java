@@ -22,6 +22,7 @@ public class Theaters {
 	private String detailedAdd;
     private Date movieTimings;
     private String soundtype;
+    private String layout_type;
     @ManyToOne
     @JoinColumn(name="movie_id")
     private Movies movie;
@@ -30,7 +31,7 @@ public class Theaters {
 		// TODO Auto-generated constructor stub
 	}
 	public Theaters(Long theaterId, String theaterName, String address, String detailedAdd, Date movieTimings,
-			String soundtype, Movies movie) {
+			String soundtype, Movies movie,String layout_type) {
 		super();
 		this.theaterId = theaterId;
 		this.theaterName = theaterName;
@@ -39,6 +40,7 @@ public class Theaters {
 		this.movieTimings = movieTimings;
 		this.soundtype = soundtype;
 		this.movie = movie;
+		this.layout_type=layout_type;
 	}
 	public long getTheaterId() {
 		return theaterId;
@@ -81,6 +83,15 @@ public class Theaters {
 	}
 	public void setMovie(Movies movie) {
 		this.movie = movie;
+	}
+	
+	public String getLayout()
+	{
+		return layout_type;
+	}
+	public void setLayout(String layout_type)
+	{
+		this.layout_type=layout_type;
 	}
 	@Override
 	public String toString() {
